@@ -1,0 +1,121 @@
+---
+title: Publicação de Páginas
+---
+
+# {frontmatter.title}
+
+## [Github Pages](https://pages.github.com)
+
+Create a new repository link
+
+![](/lm/imgs/web-server/deploy-pages/create-a-new-repository-link.png)
+
+Create a new repository page
+
+![](/lm/imgs/web-server/deploy-pages/create-a-new-repository-page.png)
+
+Repository page
+
+![](/lm/imgs/web-server/deploy-pages/repository-page.png)
+
+Install git
+
+[Donwlos Git](https://git-scm.com/downloads)
+
+```bash title="terminal"
+# apt-get install git
+```
+
+Create site folder
+
+```bash title="terminal"
+$ mkdir site-name
+```
+
+Open folder
+
+```bash title="terminal"
+$ code site-name
+```
+
+> Go to File > Menu > Open folder
+
+![](/lm/imgs/web-server/deploy-pages/open-folder.png)
+
+Initialize Git Repository
+
+```bash title="terminal"
+$ git init
+```
+
+![](/lm/imgs/web-server/deploy-pages/git-initialize.png)
+
+Create site
+
+![](/lm/imgs/web-server/deploy-pages/create-site.png)
+
+Git add
+
+```bash title="terminal"
+$ git add -A
+```
+
+![](/lm/imgs/web-server/deploy-pages/git-add.gif)
+
+Git commit
+
+```bash title="terminal"
+$ git config user.email "example@email.com"
+$ git config user.name "example"
+```
+
+```bash title="terminal"
+$ git commit -m "primeira versão do site"
+```
+
+![](/lm/imgs/web-server/deploy-pages/git-commit.gif)
+
+Git remote add
+
+```bash title="terminal"
+$ git remote add origin https://github.com/lucachaves/site-name.git
+```
+
+![](/lm/imgs/web-server/deploy-pages/git-remote-add.gif)
+
+Git push
+
+```bash title="terminal"
+$ git push -u origin master
+```
+
+![](/lm/imgs/web-server/deploy-pages/git-push.gif)
+
+> Enter login and password
+
+[git-credential-store - Helper to store credentials on disk](https://git-scm.com/docs/git-credential-store):
+
+```bash title="terminal"
+$ git config credential.helper store
+$ git push
+```
+
+Repository page with code
+
+![](/lm/imgs/web-server/deploy-pages/new-repository-page.png)
+
+Create github page
+
+[username.github.io/site-name/](https://username.github.io/site-name/)
+
+![](/lm/imgs/web-server/deploy-pages/create-github-pages.gif)
+
+## Netlify
+
+[Como colocar seu site no ar de graca](https://willianjusten.com.br/como-colocar-seu-site-no-ar-de-graca/)
+
+## Referências
+
+- [How to Initialize a Git Repository using Visual Studio Code and Publish the Code to Git Server](https://www.codeproject.com/Articles/1177391/How-to-Initialize-a-Git-Repository-using-Visual-St)
+- [Using Version Control in VS Code](https://code.visualstudio.com/docs/editor/versioncontrol)
+- [Git Version Control in VS Code](https://code.visualstudio.com/docs/introvideos/versioncontrol)

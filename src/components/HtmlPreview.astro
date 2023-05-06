@@ -43,7 +43,7 @@ const codeName = src?.split('/')?.at(-2);
     {
       src && isShowIframe ? (
         <Iframe
-          src={`/lm${src}`}
+          src={`/virtualizacao${src}`}
           srcDoc={readFile(src)}
           height={height}
           client:load

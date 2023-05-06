@@ -1,0 +1,92 @@
+---
+title: Introdução a Terraform
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+## Como Instalar o Terraform
+
+O Terraform é uma ferramenta de infraestrutura como código (IaC) desenvolvida pela HashiCorp. Com o Terraform, você pode gerenciar sua infraestrutura de forma programática, em vez de interagir com a interface de usuário do provedor de nuvem. Neste guia, vamos explicar como instalar o Terraform no seu sistema.
+
+### Instalação
+#### Windows
+
+1. Baixe o instalador do Terraform para Windows no site oficial: https://www.terraform.io/downloads.html
+2. Extraia o arquivo ZIP para uma pasta de sua escolha.
+3. Adicione a pasta extraída ao PATH do sistema.
+
+#### MacOS
+
+1. Abra o terminal.
+2. Instale o gerenciador de pacotes Homebrew com o seguinte comando:
+
+```bash
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+3. Use o Homebrew para instalar o Terraform com o seguinte comando:
+
+```bash
+brew install terraform
+```
+
+#### Linux
+
+1. Abra o terminal.
+2. Adicione o repositório HashiCorp ao seu sistema com o seguinte comando:
+
+```bash
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+```
+
+```bash
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+```
+
+3. Atualize a lista de pacotes e instale o Terraform com o seguinte comando:
+
+```bash
+sudo apt-get update && sudo apt-get install terraform
+```
+
+## Verificação da instalação
+
+Após a instalação, verifique se o Terraform está funcionando corretamente usando o comando:
+
+```bash
+terraform --version
+```
+
+Este comando deve retornar a versão do Terraform instalada no seu sistema. Se o Terraform não for encontrado, verifique se a pasta de instalação foi adicionada corretamente ao PATH do sistema.
+
+## Configurando o Terraform para trabalhar na AWS
+
+### Configurar credenciais na AWS
+
+Adicione o arquivo ~/.aws/credentials com o seguinte conteúdo:]
+<CodePreview src="/codes/terraform/intro/.credentials" height={200} />
+
+### Configurando o provider da AWS
+
+<CodePreview src="/codes/terraform/intro/provider.tf" highlightLines="2" height={200} />
+
+
+### Criando uma instância EC2
+
+<CodePreview src="/codes/terraform/intro/main.tf" highlightLines="2" lang="terraform" height={200} />
+
+### Executando o código terraform 
+
+Rode o comando abaixo para criar a instância:
+
+```bash
+terraform plan
+terraform apply
+```
+
+
+## Referências
+https://dev.to/koenighotze/using-terraform-for-cloud-deployments---part-1

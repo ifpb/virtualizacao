@@ -1,35 +1,51 @@
 ---
 layout: ../layouts/MarkDownLayout.astro
-title: Linguagem de Marcação
+title: Virtualização
 ---
 
 # {frontmatter.title}
 
-<img src="/lm/imgs/lm.png" alt="Banner da disciplina" class="hidden md:block" />
+<div class="flex gap-2 flex-col md:flex-row flex-wrap dark:bg-white">
+<img src="/virtualizacao/imgs/logo-virtualizacao.png" alt="Banner da disciplina" class="hidden md:block" />
+</div>
 
-A disciplina de [Linguagem de Marcação](/docs/plano-de-ensino.pdf) (LM) do Curso Superior de Tecnologia em Sistemas para Internet do IFPB tem como objetivo apresentar ao aluno conceitos sobre desenvolvimento Web Front-end. Sua carga horária apresenta um total de 67 horas aula e será ministrada pelo professor Francisco Dantas e Luiz Carlos Chaves. Para as aulas serão utilizadas exposições e atividades práticas, além de avaliações individuais e em grupo.
+A disciplina de [Virtualização](/virtualizacao/docs/plano-de-ensino.pdf) do Curso Superior de Tecnologia em Redes de Computadores do IFPB tem como objetivo fazer o aluno conhecer conceitos e aspectos relacionados à virtualização e computação nas nuvens.
 
 ## Conteúdo
 
-A disciplina apresenta o seguinte conteúdo, que será dividido conforme este [roteiro de aula](/lm/classnotes):
+A disciplina apresenta o seguinte conteúdo, que será dividido conforme este [roteiro de aula](/virtualizacao/classnotes):
 
-- Estrutura da Web
-  - Função do cliente e servidor HTTP
-  - Componentes para construir um sistema Web
-- XML
-  - Definição
-  - Estrutura
-- HTML
-  - Hypertexto
-  - Tag, atributo, Entidades
-  - Estrutura do HTML
-- CSS
-  - Folha de estilo
-  - Herança e cascata
-  - Seletores, propriedades, funções, media query, at-rules
-  - Definição de layouts e estilos
-  - Animações
-  - Extensões de CSS
+- Conceitos sobre Virtualização
+  - Virtualização e Computação nas Nuvens
+  - Serviços: IaaS, SaaS, PaaS, BDaaS, CaaS, XaaS, DaaS, BPaaS
+  - Tipos: Privadas, Público e Híbrido
+  - Benefícios: Compartilhamento de Recurso, Elasticidade, Segurança e Isolamento, Migração de máquinas virtuais em tempo real, Alta Disponibilidade, Balanceamento de Carga, Tolerância a Falha
+- Infraestrutura de um Data Center
+  - Configurações, Tipos, Protocolos e Tecnologias de Armazenamento, CPU, Memória e Rede 
+  - Infrastructure as Code (IaC): puppet, chef, ansible
+- Fundamentos de Virtualização
+  - Conceitos e Teorias: Virtualização, Emulação, Simulação e Virtualização de Container
+  - Tipos de Hipervisores
+  - Virtualização de dispositivo: NIC, Disco, Switch, VLAN, VSAN Máquina Virtual: Conceitos, Criação, Configuração (CPU, Memória, Storage e Rede), Snapshot.
+  - Virtualização de Container: Conceitos, Criação, Configuração Projeto de virtualização
+  - Roteiro para implementação da virtualização
+  - Conversão de máquinas físicas para máquinas virtuais P2V Identificação dos sistemas operacionais homologados
+  - Análise de desempenho dos serviços candidatos à virtualização Cálculo da memória virtual VRAM
+  - Cálculo da capacidade total da solução virtualizada
+- VMware vSphere
+  - Hipervisor e gerenciamento
+  - Arquitetura da VMware
+  - Instalação do VMware ESXi, vSphere Client, vMotion e vCenter Server
+  - Administração por CLI
+  - Snapshots de máquinas virtuais
+  - Migração de máquinas virtuais
+  - Implementação de alta disponibilidade
+- Kubernetes
+  - Container e gerenciamento 
+  - Arquitetura do Kubernates
+  - Administração por CLI e GUI 
+  - Migração de container
+  - Implementação de alta disponibilidade
 
 ## Horário e ambiente
 
@@ -37,41 +53,22 @@ As aulas da disciplina serão alocados nesse horário e ambiente:
 
 | Dia     | Horário     | Ambiente    |
 | ------- | ----------- | ----------- |
-| Segunda | 13:00-14:40 | Lab 03 e 58 |
-| Quarta  | 13:00-14:40 | Lab 03 e 57 |
+| Segunda | 07:00 - 09:30 | Lab 04    |
 
 ## Avaliações
 
-A nota final será computada através da média ponderada das três maiores avaliações:
-
-- Avaliação I: [Exercícios](https://ifpb.github.io/exercises/);
-- Avaliação II: [Projeto I](/lm/project);
-- Avaliação III: [Projeto II](/lm/project);
-
-## Comunicação
-
-Toda a comunicação será realizada usando o Google Chat.
+A nota final será computada através da média ponderada das atividades realizadas durante a disciplina.
 
 ## Bibliografia
 
 ### Bibliografia Básica
+* SOUSA NETO, Manoel Veras de. Virtualização: Tecnologia Central do Datacenter. BRASPORT, 2a edição. 2016. ISBN 9788574527611.
+8 SOUSA NETO, Manoel Veras de. Computação em Nuvem. BRASPORT, 1a edição. 2015. ISBN 9788574527475.
+* PORTNOY, Matthew. Virtualization Essentials. Sybex, 2a edição. 2016. ISBN 9781119267720.
 
-<div class="flex gap-2 flex-col md:flex-row flex-wrap items-center">[![CSS e HTML](/lm/imgs/books/css-e-html.jpeg)](https://novatec.com.br/livros/csshtml/)  [![CSS3](/lm/imgs/books/css3.jpeg)](https://novatec.com.br/livros/css3/) [![android com html css](/lm/imgs/books/android-com-html-css.jpg)](https://novatec.com.br/livros/aplicativos-android-com-html-css/)</div>
+## Bibliografia Complementar
 
-### Bibliografia Complementar
-
-<div class="flex gap-2 flex-col md:flex-row flex-wrap items-center">[![Apostila Caelum](/lm/imgs/books/caelum.png)](https://www.caelum.com.br/apostila-html-css-javascript/) [![Learn code HTML CSS](/lm/imgs/books/learn-code-html-css.png)](https://learn.shayhowe.com/advanced-html-css/) [![HTML Reference](/lm/imgs/books/mdn.png)](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference) [![CSS Reference](/lm/imgs/books/mdn.png)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference) [![Aprendendo XML](/lm/imgs/books/xml.jpg)](http://shop.oreilly.com/product/9780596004200.do)</div>
-
-E para completar ainda mais a listagem existe estes [exemplares](https://github.com/vhf/free-programming-books/blob/master/free-programming-books.md) como outros indicações.
-
-## Ferramentas
-
-- Editor
-  - [Visual Studio Code](http://code.visualstudio.com)
-- Design
-  - [Figma](https://www.figma.com/)
-- Navegador
-  - [Chrome](https://www.google.com/chrome/browser/index.html) ([Chrome status](https://www.chromestatus.com/features), [Web Developer](https://chrome.google.com/webstore/detail/web-developer/bfbameneiokkgbdmiekhjnmfkcnldhhm))
-  - [Firefox](https://www.mozilla.org/en-US/firefox/new/)
-- Versionamento de código
-  - [Git](https://git-scm.com/)
+* VITALINO, Jeferson Fernando Noronha. Descomplicando o Docker. BRASPORT, 1a edição. 2016. ISBN 9788574527970.
+* ANTUNES, Jonathan Lamim. Amazon AWS: Descomplicando a computação na nuvem. Casa do Código, 1a edição. 2016. ISBN 9788555192371.
+* ROMERO, Daniel. Containers com Docker: Do desenvolvimento à produção. Casa do Código, 1a edição. 2015. ISBN 9788555191046.
+* MARSHALL, Nick. Mastering VMware vSphere 6. Sybex, 1a edição. 2015. ISBN 9781118925157. IVANOV, Konstantin. KVM Virtualization Cookbook. Packt Publishing. 2017. ISBN 9781788294676.

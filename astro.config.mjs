@@ -20,7 +20,7 @@ const markdownConfig = {
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ifpb.github.io',
-  base: '/lm',
+  base: '/virtualizacao',
   markdown: markdownConfig,
   integrations: [react(), tailwind(), mdx()],
 });

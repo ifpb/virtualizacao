@@ -61,32 +61,3 @@ terraform --version
 ```
 
 Este comando deve retornar a versão do Terraform instalada no seu sistema. Se o Terraform não for encontrado, verifique se a pasta de instalação foi adicionada corretamente ao PATH do sistema.
-
-## Configurando o Terraform para trabalhar na AWS
-
-### Configurar credenciais na AWS
-
-Adicione o arquivo ~/.aws/credentials com o seguinte conteúdo:]
-<CodePreview src="/codes/terraform/intro/.credentials" height={200} />
-
-### Configurando o provider da AWS
-
-<CodePreview src="/codes/terraform/intro/provider.tf" highlightLines="2" height={200} />
-
-
-### Criando uma instância EC2
-
-<CodePreview src="/codes/terraform/intro/main.tf" highlightLines="3,8" lang="terraform" height={200} />
-
-### Executando o código terraform 
-
-Rode o comando abaixo para criar a instância:
-
-```bash
-terraform plan
-terraform apply
-```
-
-
-## Referências
-https://dev.to/koenighotze/using-terraform-for-cloud-deployments---part-1

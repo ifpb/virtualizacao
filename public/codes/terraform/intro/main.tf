@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "us-east-2"
+}
+
 resource "aws_key_pair" "ssh" {
   key_name   = "ssh_key"
   public_key = file("~/.ssh/id_rsa.pub")

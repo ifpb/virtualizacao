@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-2"
+  region = var.aws_region
 }
 
 resource "aws_key_pair" "ssh" {
@@ -8,8 +8,8 @@ resource "aws_key_pair" "ssh" {
 }
 
 resource "aws_instance" "web" {
-  ami           = "ami-0c55b159cbfafe1f0"
-  instance_type = "t2.micro"
+  ami           = var.ami
+  instance_type = var.instance_type
   key_name      = aws_key_pair.ssh.key_name
 
   tags = {

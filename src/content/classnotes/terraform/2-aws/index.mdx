@@ -27,7 +27,16 @@ Crie um arquivo chamado `credentials` no diretório `~/.aws` e adicione as crede
 mkdir aws-vm && cd aws-vm
 ```
 
-### 2. Crie um arquivo chamado main.tf e adicione o seguinte conteúdo:
+### 2. Crie um arquivo com as variáveis
+<CodePreview src="/codes/terraform/intro/variables.tf" lang="terraform" height={200} />
+
+Este arquivo irá definir as variáveis que serão usadas no projeto. 
+Neste caso, definimos as variáveis `aws_region`, `aws_ami` e `aws_instance_type`.
+
+Os valores das variáveis podem ser definidos diretamente no arquivo, como no exemplo acima, ou em um arquivo separado, como no exemplo abaixo:
+<CodePreview src="/codes/terraform/intro/terraform.tfvars" lang="terraform" height={200} />
+
+### 3. Crie um arquivo chamado main.tf e adicione o seguinte conteúdo:
 
 <CodePreview src="/codes/terraform/intro/main.tf" highlightLines="2,7,12" lang="terraform" height={200} />
 
@@ -39,14 +48,18 @@ Este arquivo irá:
 
 Neste código,criamos um recurso `aws_instance` que representa a máquina virtual que queremos criar. Usamos a AMI padrão da região e especificamos que a instância deve ser do tipo `t2.micro`, que está disponível na camada gratuita.
 
-<div class="bg-indigo-900 text-center py-4 lg:px-4">
-  * Caso você não possua nenhum certificado criado na sua máquina, use o seguinte comando para gerar um:
-  ```bash
-  ssh-keygen
-  ````
-</div>
+* Caso você não possua nenhum certificado criado na sua máquina, use o seguinte comando para gerar um:
+```bash
+ssh-keygen
+````
 
-### 3. Inicie um novo diretório Terraform com o comando:
+### 4. Crie um arquivo de saída
+
+Este arquivo irá definir a saída que será exibida após a criação da instância.
+Neste caso, queremos exibir o nome e o endereço IP público da instância.
+<CodePreview src="/codes/terraform/intro/outputs.tf" lang="terraform" height={200} />
+
+### 5. Inicie um novo diretório Terraform com o comando:
 
 ```bash
 terraform init
@@ -54,7 +67,7 @@ terraform init
 
 Este comando baixará os plugins necessários para usar o provedor da AWS.
 
-### 4. Visualize as alterações que o Terraform fará na infraestrutura com o comando:
+### 6. Visualize as alterações que o Terraform fará na infraestrutura com o comando:
 
 ```bash
 terraform plan
@@ -62,7 +75,7 @@ terraform plan
 
 Este comando lista as alterações que o Terraform fará na infraestrutura.
 
-### 5. Crie a máquina virtual na AWS com o comando:
+### 7. Crie a máquina virtual na AWS com o comando:
 
 ```bash
 terraform apply
@@ -70,11 +83,11 @@ terraform apply
 
 O Terraform solicitará uma confirmação antes de aplicar as alterações. Digite "yes" e pressione Enter para continuar.
 
-### 6. Aguarde o Terraform concluir a criação da máquina virtual.
+### 8. Aguarde o Terraform concluir a criação da máquina virtual.
 
 Após a conclusão, o Terraform exibirá a saída que contém informações sobre a instância criada, incluindo o ID, endereço IP e outras informações relevantes.
 
-### 7. Adicionando o certificado SSH
+### 9. Adicionando o certificado SSH
 
 Agora que a instância foi criada, vamos adicionar o certificado SSH para acessá-la. Para isso, execute o seguinte comando para obter o endereço IP público da instância:
 
@@ -95,7 +108,7 @@ Se tudo ocorreu bem, você agora está conectado à instância da VM via SSH.
 
 E pronto! Agora você tem uma máquina virtual gratuita na AWS criada com Terraform. 
 
-### 8. Destruindo a instância criada
+### 10. Destruindo a instância criada
 Lembre-se de destruir a instância quando não precisar mais dela para evitar cobranças inesperadas. Isso pode ser feito com o comando:
 
 ```bash

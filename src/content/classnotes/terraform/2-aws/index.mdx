@@ -17,7 +17,28 @@ Neste tutorial, vamos mostrar como criar uma máquina virtual gratuita (free tie
 ## Configurar Credenciais da AWS localmente
 Crie um arquivo chamado `credentials` no diretório `~/.aws` e adicione as credenciais da AWS:
 
-<CodePreview src="/codes/terraform/intro/.credentials" lang="terraform" height={200} />
+<CodePreview src="/codes/terraform/intro/credentials" lang="terraform" height={200} />
+
+Caso você não possua as credenciais, siga os passos abaixo para obtê-las:
+* Faça login na sua conta da AWS.
+* Clique no seu nome de usuário no canto superior direito e selecione a opção "My Security Credentials".
+* Clique em "Create access key".
+* Clique em "Show" para exibir a chave de acesso e a chave secreta.
+* Copie as chaves e cole no arquivo `~/.aws/credentials`.
+* Salve o arquivo.
+
+Caso não queira ou não tenha permissão para criar o arquivo de credenciais na pasta home do seu usuário, você pode adicionar os seguintes parâmetros à configuração do provider:
+```terraform
+provider "aws" {
+  region = var.aws_region
+  access_key = "SUA_ACCESS_KEY"
+  secret_key = "SUA_SECRET_KEY"
+}
+```
+
+É importante ressaltar que a melhor prática é criar o arquivo de credenciais na pasta home do seu usuário. Pois desta forma você não precisa adicionar as credenciais no código e corre o risco de cometer um erro e expor as credenciais no repositório.
+
+Outra alternativa mais segura seria configurar as variáveis de ambiente `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY` com as credenciais da AWS.
 
 ## Criando a VM com Terraform - Passo a passo
 

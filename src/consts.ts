@@ -4,6 +4,8 @@ export const CLASSNOTE_SLUGS = [
   // 'web-server/live-server',
   'terraform/1-instalacao',
   'terraform/2-aws',
+  'terraform/3-states',
+  'terraform/4-provisioners'
 ];
 
 export const MENU = [

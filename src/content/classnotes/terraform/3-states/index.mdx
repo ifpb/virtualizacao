@@ -1,0 +1,107 @@
+---
+title: Gerenciando estado usando Terraform
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+## Introdução
+
+O Terraform é uma ferramenta de infraestrutura como código (IaC) que permite gerenciar a infraestrutura de um ambiente de forma declarativa. Isso significa que ao invés de escrever scripts para realizar a configuração da infraestrutura, é possível declarar como ela deve ser e o Terraform se encarrega de realizar as alterações necessárias.
+
+O estado (state) do Terraform é um arquivo que contém informações sobre a infraestrutura gerenciada por ele. Ele mantém o registro do que foi criado, modificado ou excluído no ambiente. É importante que o estado seja armazenado de forma segura e atualizado conforme as alterações são realizadas no ambiente.
+
+## State
+
+### Inicialização do estado
+Para inicializar o estado do Terraform, é necessário executar o comando `terraform init` no diretório onde estão os arquivos de configuração. Este comando irá baixar os plugins necessários para interagir com os provedores de nuvem e criar o arquivo de estado.
+
+### Gerenciamento do estado
+O Terraform realiza o gerenciamento do estado automaticamente. Quando o comando `terraform apply` é executado, o Terraform compara o estado atual com o estado desejado e realiza as alterações necessárias.
+
+Para atualizar o estado manualmente, é possível executar o comando `terraform refresh`. Este comando atualiza o estado do Terraform sem realizar nenhuma alteração no ambiente.
+
+### Armazenamento do estado
+O estado do Terraform pode ser armazenado em diversos backends, como S3, Consul e Terraform Cloud. Para definir o backend a ser utilizado, é necessário adicionar a seção backend no arquivo de configuração do Terraform. Exemplo:
+
+```terraform
+terraform {
+  backend "s3" {
+    bucket = "meu-bucket"
+    key    = "estado-terraform/terraform.tfstate"
+    region = "us-east-2"
+  }
+}
+```
+
+## Configurando o armazenamento do estado no S3 e no Terraform Cloud
+
+### Configurando o S3
+
+1. Acesse o console da AWS e crie um novo bucket S3 para armazenar o estado do Terraform.
+1. Crie uma política do IAM que permita o acesso ao bucket S3 e salve a chave de acesso e a chave secreta.
+1. No arquivo main.tf, adicione as seguintes linhas para configurar o backend do Terraform para armazenar o estado no S3:
+
+```terraform
+terraform {
+  backend "s3" {
+    bucket = "nome-do-bucket-s3"
+    key    = "terraform.tfstate"
+    region = "regiao-da-aws"
+    access_key = "chave-de-acesso-do-iam"
+    secret_key = "chave-secreta-do-iam"
+  }
+}
+```
+
+Substitua nome-do-bucket-s3 pelo nome do bucket criado no passo 1, regiao-da-aws pela região da AWS em que o bucket foi criado e chave-de-acesso-do-iam e chave-secreta-do-iam pelas chaves de acesso e secreta criadas no passo 2.
+
+Execute o comando `terraform init` para inicializar o backend do Terraform e armazenar o estado no S3.
+
+Caso prefira, ao invés de criar manualmente via console da AWS, é possível usar Terraform para fazer a criação do bucket:
+
+```terraform
+provider "aws" {
+  region = "regiao-da-aws"
+}
+
+resource "aws_s3_bucket" "exemplo-bucket" {
+  bucket = "nome-do-bucket-s3"
+  acl    = "private"
+
+  tags = {
+    Name = "Exemplo de bucket S3"
+  }
+}
+```
+Substitua regiao-da-aws pela região da AWS em que o bucket será criado e nome-do-bucket-s3 pelo nome desejado para o bucket.
+
+Este código cria um novo bucket S3 com o nome especificado e configura as permissões para serem privadas. Também é possível adicionar tags para identificação do recurso.
+
+### Configurando o Terraform Cloud
+
+1. Acesse o [console do Terraform Cloud](https://app.terraform.io/session) e crie uma nova organização.
+2. Crie um novo workspace para o projeto do Terraform e vincule-o à organização criada no passo 1.
+3. No workspace criado, acesse a aba Settings e clique em General.
+4. Selecione a opção Configure state e escolha a opção Remote.
+5. Insira as informações de autenticação do backend do S3 configurado anteriormente, incluindo o bucket, o region, a access_key e a secret_key.
+6. Clique em Verify settings para confirmar a conexão com o backend do S3 e, em seguida, em Save settings para salvar as configurações.
+Agora o estado do Terraform será armazenado no Terraform Cloud, que pode ser acessado de qualquer lugar com as credenciais de acesso adequadas.
+
+## Exercícios
+
+### Exercício 1: Gerenciando o estado
+Crie um diretório para o exercício e inicialize o estado do Terraform. Em seguida, crie um arquivo main.tf que defina uma instância EC2 na AWS.
+
+Execute o comando terraform plan para visualizar as alterações que serão realizadas. Em seguida, execute o comando terraform apply para criar a instância.
+
+Após a criação da instância, execute o comando terraform refresh para atualizar o estado do Terraform. Em seguida, modifique a instância criada no console da AWS e execute o comando terraform refresh novamente. Observe que o estado do Terraform foi atualizado com as alterações feitas no console da AWS.
+
+### Exercício 2: Armazenando o estado
+Crie um bucket S3 na AWS e configure o backend do Terraform para armazenar o estado neste bucket. Em seguida, execute o comando terraform init para inicializar o backend.
+
+Crie um arquivo main.tf que defina uma instância EC2 na AWS. Execute o comando terraform plan para visualizar as alterações que serão realizadas. Em seguida, execute o comando terraform apply para criar a instância.
+
+Verifique que o estado foi armazenado no bucket S3 definido no backend. Em seguida, exclua a instância criada no console da AWS e execute o comando terraform refresh para atualizar o estado do Terraform. Observe que o estado do Terraform foi atualizado com as alterações feitas no console da AWS.

@@ -1,0 +1,137 @@
+---
+title: Usando Provisioners no Terraform
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+Os provisioners são recursos do Terraform que permitem executar scripts ou comandos em uma instância ou recurso gerenciado pelo Terraform após a criação ou atualização desse recurso. Os provisioners são úteis para realizar tarefas como:
+
+  * Configurar software em uma instância EC2;
+  * Carregar dados em um banco de dados recém-criado;
+  * Executar testes de integração ou validação;
+  * Executar uma configuração inicial em uma instância recém-criada;
+  * Etc.
+
+## Tipos de provisioners
+
+Existem algusn tipos de provisioners no Terraform, dentre os quais destacamos:
+
+  * **Local-exec provisioner:** Este provisioner executa um comando ou script em sua máquina local após a criação de um recurso. Por exemplo, pode ser usado para executar um script de inicialização local que configura um servidor após a criação de uma instância EC2 na AWS.
+  * **Remote-exec provisioner:* Este provisioner executa um comando ou script em uma instância recém-criada após a criação ou atualização do recurso. Por exemplo, pode ser usado para configurar um software específico em uma instância EC2 após sua criação.
+  * **File provisioner:* Este provisioner permite que você envie arquivos para a sua infraestrutura recém-criada durante o processo de provisionamento.
+
+## Exemplo de provisioners
+
+Aqui está um exemplo de como usar o provisioner local-exec para executar um script após a criação de uma instância EC2:
+
+```terraform
+resource "aws_instance" "exemplo-instance" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+
+  provisioner "local-exec" {
+    command = "echo 'Configurando o software da instância recém-criada...' > /tmp/resultado.txt"
+  }
+}
+```
+
+Este código cria uma instância EC2 na AWS e usa o provisioner local-exec para executar um comando que escreve um arquivo de resultado em sua máquina local após a criação da instância.
+
+Aqui está outro exemplo de como usar o provisioner remote-exec para executar um script em uma instância recém-criada:
+
+```terraform
+resource "aws_instance" "exemplo-instance" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install -y nginx",
+      "sudo systemctl start nginx"
+    ]
+  }
+}
+```
+
+Este código cria uma instância EC2 na AWS e usa o provisioner remote-exec para executar comandos em sequência que atualizam os pacotes da instância, instalam o servidor web Nginx e iniciam o serviço Nginx após a criação da instância.
+
+## O provisioner `file`
+
+O provisioner "file" do Terraform permite que você envie arquivos para a sua infraestrutura recém-criada durante o processo de provisionamento. Isso pode ser útil, por exemplo, para enviar arquivos de configuração, arquivos de script ou arquivos de dados para a sua instância.
+
+A sintaxe básica do provisioner "file" é a seguinte:
+```terraform
+provisioner "file" {
+  source      = "source/file/path"
+  destination = "destination/file/path"
+}
+```
+
+Onde:
+
+* `source`: caminho para o arquivo na sua máquina local ou no sistema de arquivos do servidor onde o Terraform está sendo executado.
+* `destination`: caminho para onde o arquivo deve ser enviado na infraestrutura recém-criada.
+
+Por exemplo, se você quiser enviar um arquivo chamado config.ini localizado na sua máquina local para um servidor remoto em /etc/myapp/config.ini, você pode usar o seguinte código:
+
+```terraform
+resource "aws_instance" "web" {
+  ami           = "ami-0c94855ba95c71c99"
+  instance_type = "t2.micro"
+  key_name      = "mykey"
+  security_groups = ["web-sg"]
+
+  provisioner "file" {
+    source      = "config.ini"
+    destination = "/etc/myapp/config.ini"
+  }
+}
+```
+Você também pode usar expressões do Terraform nos caminhos de origem e destino. Isso pode ser útil, por exemplo, se você estiver criando vários servidores com nomes diferentes, mas precisar enviar o mesmo arquivo para cada um deles. Você pode usar expressões para construir o caminho de destino dinamicamente:
+
+```terraform
+resource "aws_instance" "web" {
+  count         = 3
+  ami           = "ami-0c94855ba95c71c99"
+  instance_type = "t2.micro"
+  key_name      = "mykey"
+  security_groups = ["web-sg"]
+
+  provisioner "file" {
+    source      = "config.ini"
+    destination = "/etc/myapp/${aws_instance.web.*.id[count.index]}/config.ini"
+  }
+}
+```
+
+Neste exemplo, o Terraform criará 3 instâncias EC2 (usando o recurso "count") e usará a expressão `${aws_instance.web.*.id[count.index]}` para construir o caminho de destino `/etc/myapp/<id-da-instancia>/config.ini` para cada instância. Isso garantirá que o arquivo seja enviado para o caminho correto em cada instância.
+
+O provisioner "file" é uma ferramenta poderosa para enviar arquivos para a sua infraestrutura recém-criada. No entanto, é importante lembrar que, sempre que você enviar um arquivo para uma instância, precisará lidar com as permissões de acesso e com a segurança desse arquivo. Certifique-se de estar enviando apenas arquivos que são necessários e que estão adequadamente protegido.
+
+
+## Exercícios
+1. Use um provisioner remote-exec para instalar o servidor web Apache em uma instância EC2 após sua criação. O script deve atualizar os pacotes da instância e instalar o Apache, em seguida, iniciar o serviço do Apache.
+* Dicas: 
+  * Utilize uma instância t2.micro e configure os seguintes comandos no provisioner remote-exec para instalar os pacotes:
+  ```bash
+    sudo yum update -y
+    sudo yum install -y httpd
+    sudo service httpd start
+  ```
+
+2. Crie um arquivo index.html em sua máquina local e use um provisioner local-exec para copiar o arquivo para uma instância EC2 após sua criação. O arquivo deve ser copiado para o diretório /var/www/html na instância.
+* Dicas: 
+  * Crie um arquivo index.html na sua máquina local usando o provisioner local-exec executando o seguinte como bash:
+    ```bash
+    cat > index.html <<EOF
+    <html>
+      <body><h1>Olá, Terraform!</h1></body>
+
+    </html>
+    EOF
+    ```
+  * Utilize o provisioner "file" para fazer a cópia do arquivo para a instância remota

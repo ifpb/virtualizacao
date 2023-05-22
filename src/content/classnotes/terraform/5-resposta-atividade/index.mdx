@@ -1,0 +1,33 @@
+---
+title: Resposta da Atividade - Terraform
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+## Criação de uma instância na EC2 com uso de provisioners para instalação do httpd e cópia de um arquivo html
+
+Primeiramente, vamos alterar a AMI para referenciar uma imagem do CentOS:
+<CodePreview src="/codes/terraform/resposta_atividade/terraform.tfvars" lang="terraform" height={200} />
+
+Agora, vamos criar o código para a criação da instância:
+
+<CodePreview src="/codes/terraform/resposta_atividade/main.tf" lang="terraform" height={200} />
+
+Algumas observações sobre a implementação:
+* Para permitir o acesso público tanto via SSH, quanto via HTTP, estamos criando um `aws_security_group` que permite o acesso irrestrito de saída (egress) e de entrada (ingress) nas portas 22 e 80.
+* Para permitir o acesso via SSH, estamos criando um `aws_key_pair` e salvando a chave privada em um arquivo local.
+* Para instalar o httpd na instância remota, estamos utilizando o provisioner `remote-exec` do Terraform.
+* Para que seja possível instalar os pacotes no CentOS, foi necessário corrigir as URLs dos repositórios:
+```bash
+"sudo sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*"
+"sudo sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*"
+```
+* Note que um único bloco `connection` foi declarado e será utilizado em comum pelos múltiplos `remote-exec` que existem nesse mesmo resource.
+* Usamos o provisioner local-exec para fazer a geração do arquivo index.html no sistema de arquivos local
+* O Provisioner "file" é utilizado para copiar o arquivo index.html para o servidor remoto. Note que por questões de permissionamento, o arquivo é copiado inicialmente para o diretório /tmp/index.html
+* Logo em seguida, fazemos um novo provisioner remote-exec (usando sudo) para mover o arquivo da pasta /tmp para a pasta do servidor httpd (/var/www/html)
+
+Após a execução do comando `terraform apply`, basta acessar o IP público que é exibido na saída a partir de qualquer navegador que deverá ser possível ver a mensagem "Olá, Terraform!".

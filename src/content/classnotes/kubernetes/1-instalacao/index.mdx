@@ -1,0 +1,92 @@
+---
+title: Configurando um Cluster Kubernetes com Minikube
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+## Configurando um Cluster Kubernetes com Minikube
+
+Vamos configurar um cluster Kubernetes local usando Minikube. 
+Minikube permite que você execute um único nó de cluster Kubernetes em seu computador para fins de desenvolvimento e teste.
+
+### Pré-requisitos
+
+Antes de começar, verifique se você possui os seguintes pré-requisitos instalados em sua máquina:
+
+    1. (https://www.docker.com/get-started)[Docker] - para executar os contêineres no cluster Kubernetes.
+    1. (https://kubernetes.io/docs/tasks/tools/)[Kubectl] - a ferramenta de linha de comando para interagir com o cluster Kubernetes.
+    1. (https://minikube.sigs.k8s.io/docs/start/)[Minikube] - para executar o cluster Kubernetes localmente.
+
+### Passo 1: Instalação do Minikube
+
+1. Abra um terminal e execute o seguinte comando para instalar o Minikube:
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
+
+2. Verifique se o Minikube foi instalado corretamente executando o comando:
+```bash
+minikube version
+```
+
+### Passo 2: Inicializando o Cluster Kubernetes
+
+1. No terminal, execute o seguinte comando para iniciar o cluster Kubernetes com Minikube:
+
+```bash
+minikube start
+```
+
+2. Aguarde enquanto o Minikube baixa a imagem do nó do cluster e inicia o cluster.
+
+3. Verifique se o cluster está em execução executando o comando:
+```bash
+kubectl cluster-info
+```
+
+Você deve ver informações sobre o cluster Kubernetes local.
+
+### Passo 3: Testando o Cluster
+
+Execute o seguinte comando para obter os nós do cluster Kubernetes:
+```bash
+kubectl get nodes
+```
+
+Deve retornar pelo menos um nó com o estado "Ready".
+
+Execute o seguinte comando para obter os pods no cluster:
+```bash
+kubectl get pods --all-namespaces
+```
+Deve retornar uma lista vazia, pois ainda não implantamos nenhum pod.
+
+### Passo 4: Interagindo com o Cluster
+
+Agora que o cluster está configurado e em execução, você pode começar a implantar e gerenciar aplicativos Kubernetes usando o kubectl.
+
+Aqui estão alguns comandos úteis para começar:
+
+* **kubectl create deployment**: cria um novo deployment (implantação) no cluster.
+* **kubectl get deployments**: obtém uma lista de deployments existentes.
+* **kubectl create service**: cria um novo serviço para expor um deployment.
+* **kubectl get services**: obtém uma lista de serviços existentes.
+
+Consulte a documentação oficial do Kubernetes para mais comandos e informações sobre como usar o kubectl.
+
+### Passo 5: Encerrando o Cluster
+
+Quando terminar de usar o cluster, você pode pará-lo executando o seguinte comando:
+
+```bash
+minikube stop
+```
+
+Isso interromperá o cluster e liberará os recursos ocupados.
+
+Parabéns! Agora você configurou com sucesso um cluster Kubernetes local usando o Minikube. Você pode continuar explorando e aprendendo sobre o Kubernetes implantando

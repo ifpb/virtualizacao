@@ -6,7 +6,8 @@ export const CLASSNOTE_SLUGS = [
   'terraform/2-aws',
   'terraform/3-states',
   'terraform/4-provisioners',
-  'terraform/5-resposta-atividade'
+  'terraform/5-resposta-atividade',
+  'kubernetes/1-instalacao',
 ];
 
 export const MENU = [

@@ -18,3 +18,150 @@ Antes de começar, verifique se você possui os seguintes pré-requisitos:
 
 ## Passo 1: Criação de um Pod Standalone
 
+Um Pod standalone roda de maneira independente (não é controlado por nenhum recurso externo como um deployment). 
+Um Pod standalone é útil para testes e para rodar aplicações que não precisam ser escaladas.
+
+Para criação de um Pod standalone, crie um arquivo YAML com o seguinte conteúdo:
+<CodePreview src="/codes/kubernetes/exemplos-iniciais/nginx.pod.yaml" lang="terraform" height={200} />
+
+Alternativamente, é possível criar o Pod usando o comando `kubectl run`:
+```bash
+kubectl run nginx-pod --image=nginx:latest --port=80
+```
+
+Para gerar o arquivo YAML a partir do Pod criado com o comando `kubectl run`, execute o seguinte comando:
+```bash
+kubectl run nginx-pod --image=nginx:latest --port=80 --dry-run -o yaml > nginx.pod.yaml
+```
+
+Isso irá gerar um arquivo manifest YAML para criação do pod chamado nginx.pod.yaml.
+
+Para aplicar as mudanças, basta executar o seguinte comando:
+```bash
+kubectl apply -f nginx.pod.yaml
+```
+
+Isso irá fazer com que o Kubernetes crie um Pod chamado `nginx-pod` com a imagem `nginx:latest` e com a porta `80` exposta.
+
+Para verificar se o Pod foi criado, execute o seguinte comando:
+```bash
+kubectl get pods
+```
+
+Para verificar os detalhes do Pod, execute o seguinte comando:
+```bash
+kubectl describe pod nginx-pod
+```
+
+## Passo 2: Criação de um Deployment
+
+Um Deployment é um recurso do Kubernetes que gerencia a criação de um conjunto de Pods.
+
+Para criação de um Deployment, crie um arquivo YAML com o seguinte conteúdo:
+<CodePreview src="/codes/kubernetes/exemplos-iniciais/nginx.deployment.yaml" lang="terraform" height={200} />
+
+Alternativamente, é possível criar o Deployment usando o comando `kubectl create`:
+```bash
+kubectl create deployment nginx-deployment --image=nginx:latest --port=80
+```
+
+Para gerar o arquivo YAML a partir do Deployment criado com o comando `kubectl create`, execute o seguinte comando:
+```bash
+kubectl create deployment nginx-deployment --image=nginx:latest --port=80 --dry-run -o yaml > nginx.deployment.yaml
+```
+
+Isso irá gerar um arquivo manifest YAML para criação do deployment chamado nginx.deployment.yaml.
+
+Para aplicar as mudanças, basta executar o seguinte comando:
+```bash
+kubectl apply -f nginx.deployment.yaml
+```
+
+Isso irá fazer com que o Kubernetes crie um Deployment chamado `nginx-deployment` com a imagem `nginx:latest` e com a porta `80` exposta.
+
+Para verificar se o Deployment foi criado, execute o seguinte comando:
+```bash
+kubectl get deployments
+```
+
+Para verificar os pods criados pelo Deployment, execute o seguinte comando:
+```bash
+kubectl get pods
+```
+
+Note que se um dos pods for excluído, o Deployment irá criar um novo pod para substituí-lo.
+
+Faça o teste excluindo um dos pods e verifique se um novo pod é criado:
+```bash
+kubectl delete pod <nome-do-pod>
+```
+
+## Passo 3: Criação de um Service
+
+Um Service é um recurso do Kubernetes que expõe um conjunto de Pods como um único endpoint.
+
+Para criação de um Service, crie um arquivo YAML com o seguinte conteúdo:
+<CodePreview src="/codes/kubernetes/exemplos-iniciais/nginx.service.yaml" lang="terraform" height={200} />
+
+Alternativamente, é possível criar o Service usando o comando `kubectl expose`:
+```bash
+kubectl expose deployment nginx-deployment --port=80 --type=NodePort
+```
+
+Para gerar o arquivo YAML a partir do Service criado com o comando `kubectl expose`, execute o seguinte comando:
+```bash
+kubectl expose deployment nginx-deployment --port=80 --type=NodePort --dry-run -o yaml > nginx.service.yaml
+```
+
+Isso irá gerar um arquivo manifest YAML para criação do service chamado nginx.service.yaml.
+
+Para aplicar as mudanças, basta executar o seguinte comando:
+```bash
+kubectl apply -f nginx.service.yaml
+```
+
+Isso irá fazer com que o Kubernetes crie um Service chamado `nginx-service` com a porta `80` exposta.
+
+Para verificar se o Service foi criado, execute o seguinte comando:
+```bash
+kubectl get services
+```
+
+Para verificar os detalhes do Service, execute o seguinte comando:
+```bash
+kubectl describe service nginx-service
+```
+
+## Passo 4: Teste de Implantação
+
+Para testar a implantação do Nginx, execute o seguinte comando:
+```bash
+kubectl port-forward service/nginx-service 8080:80
+```
+
+Isso irá fazer com que o Kubernetes encaminhe as requisições feitas para a porta `8080` do seu computador para a porta `80` do Service `nginx-service`.
+
+Para testar o Nginx, abra o navegador e acesse o endereço `http://localhost:8080`.
+
+## Passo 5: Exclusão dos Recursos
+
+Para excluir os recursos criados, execute o seguinte comando:
+```bash
+kubectl delete -f nginx.pod.yaml
+kubectl delete -f nginx.deployment.yaml
+kubectl delete -f nginx.service.yaml
+```
+
+## Conclusão
+
+Neste tutorial, você aprendeu como implantar o servidor web Nginx no Kubernetes.
+
+## Referências
+- [Kubernetes Documentation](https://kubernetes.io/docs/home/)
+- [Kubernetes Concepts](https://kubernetes.io/docs/concepts/)
+- [Kubernetes API Reference](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/)
+- [Kubernetes Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+- [Kubernetes Tutorial for Beginners](https://www.youtube.com/watch?v=X48VuDVv0do)
+
+
+

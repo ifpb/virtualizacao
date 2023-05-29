@@ -1,0 +1,166 @@
+---
+title: Criando Configmaps e Secrets
+
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+## O que são ConfigMaps e Secrets no Kubernetes?
+ConfigMaps e Secrets são dois recursos do Kubernetes que permitem que você gerencie e injete configurações sensíveis em seus aplicativos. 
+Eles são usados para separar as configurações dos aplicativos do código-fonte e permitir que você altere essas configurações sem precisar reconstruir ou reimplantar seus contêineres.
+
+## ConfigMaps
+O ConfigMap é um objeto do Kubernetes que armazena pares de chave-valor, que representam suas configurações. E
+ssas configurações podem ser arquivos de configuração, variáveis de ambiente ou qualquer outra informação que seu aplicativo precise para funcionar corretamente.
+
+### Passos para criar um ConfigMap:
+Crie um arquivo chamado configmap.yaml e abra-o em um editor de texto.
+Defina o nome e os dados do ConfigMap. Aqui está um exemplo básico:
+<CodePreview src="/codes/kubernetes/exemplos-iniciais/redis.cm.yaml" lang="yaml" height={200} />
+
+Salve o arquivo e execute o seguinte comando para criar o ConfigMap:
+```bash
+kubectl apply -f redis.cm.yaml
+```
+Verifique se o ConfigMap foi criado com sucesso:
+```bash
+kubectl get configmaps
+```
+
+Agora você pode injetar esse ConfigMap em seus pods ou usar suas chaves como variáveis de ambiente nos contêineres.
+
+### Injetando ConfigMaps em pods
+Você pode injetar um ConfigMap em um pod usando volumes ou variáveis de ambiente.
+
+Exemplo de injeção de ConfigMap usando volume:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: meu-pod
+spec:
+    containers:
+    - name: meu-container
+        image: minha-imagem
+        volumeMounts:
+        - name: config-volume
+        mountPath: /path/to/config
+    volumes:
+    - name: config-volume
+        configMap:
+        name: meu-configmap
+    ```
+
+Exemplo de injeção de ConfigMap usando variáveis de ambiente:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: meu-pod
+spec:
+    containers:
+    - name: meu-container
+        image: minha-imagem
+        env:
+        - name: CHAVE1
+        valueFrom:
+            configMapKeyRef:
+            name: meu-configmap
+            key: CHAVE1
+        - name: CHAVE2
+        valueFrom:
+            configMapKeyRef:
+            name: meu-configmap
+            key: CHAVE2
+    ```
+
+Exemplo utilizando o ConfigMap para configurar o Redis:
+<CodePreview src="/codes/kubernetes/exemplos-iniciais/redis.deploy.yaml" lang="yaml" height={200} />
+
+
+## Secrets
+O Secret é semelhante ao ConfigMap, mas é usado para armazenar informações sensíveis, como senhas, chaves de API e certificados TLS. 
+Os Secrets são codificados em base64 quando armazenados no Kubernetes, mas eles podem ser decodificados facilmente.
+
+### Passos para criar um Secret:
+Crie um arquivo chamado secret.yaml e abra-o em um editor de texto.
+Defina o nome e os dados do Secret. Aqui está um exemplo básico:
+
+```bash
+apiVersion: v1
+kind: Secret
+metadata:
+  name: meu-secret
+type: Opaque
+data:
+  chave1: valor1
+  chave2: valor2
+```
+
+Salve o arquivo e execute o seguinte comando para criar o Secret:
+```bash
+kubectl apply -f secret.yaml
+```
+
+Verifique se o Secret foi criado com sucesso:
+```bash
+kubectl get secrets
+```
+
+Assim como o ConfigMap, você pode injetar o Secret em seus pods ou usá-lo como variáveis de ambiente nos contêineres. 
+No entanto, lembre-se de que o conteúdo de um Secret é apenas codificado em base64, não criptografado.
+
+### Injetando Secrets em pods
+Agora que você criou um Secret, pode injetá-los em seus pods usando volumes ou variáveis de ambiente.
+
+Exemplo de injeção de Secret usando volume:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: meu-pod
+spec:
+    containers:
+    - name: meu-container
+        image: minha-imagem
+        volumeMounts:
+        - name: secret-volume
+        mountPath: /path/to/secret
+    volumes:
+    - name: secret-volume
+        secret:
+        secretName: meu-secret
+    ```
+
+Exemplo de injeção de Secret usando variáveis de ambiente:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: meu-pod
+spec:
+    containers:
+    - name: meu-container
+        image: minha-imagem
+        env:
+        - name: CHAVE1
+        valueFrom:
+            secretKeyRef:
+            name: meu-secret
+            key: CHAVE1
+        - name: CHAVE2
+        valueFrom:
+            secretKeyRef:
+            name: meu-secret
+            key: CHAVE2
+    ```
+
+## Referências
+- [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
+- [Kubernetes ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/)
+- [Kubernetes Secrets vs ConfigMaps](https://www.magalix.com/blog/kubernetes-secrets-vs-configmaps-6-key-differences)
+
+

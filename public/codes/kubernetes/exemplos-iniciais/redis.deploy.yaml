@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis
+  name: redis
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      volumes:
+        - name: redis-volume
+          configMap:
+            name: redis-cm
+            items:
+              - key: config.json
+                path: config.json
+      containers:
+      - image: redis:latest
+        volumeMounts:
+          - name: redis-volume
+            mountPath: /etc/redis/config.json
+            subPath: config.json
+        env:
+          - name: REDIS_USER
+            valueFrom:
+              configMapKeyRef:
+                key: redis-user
+                name: redis-cm
+          - name: REDIS_PROFESSOR
+            valueFrom:
+              configMapKeyRef:
+                key: professor
+                name: redis-cm
+          # - name: REDIS_USER
+          #   value: virtualizacao
+          # - name: PROFESSOR
+          #   value: Diego
+        imagePullPolicy: Always
+        name: redis

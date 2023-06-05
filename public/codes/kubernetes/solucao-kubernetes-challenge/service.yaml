@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kubernetes-challenge
+  name: kubernetes-challenge
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 4000
+  selector:
+    app: kubernetes-challenge

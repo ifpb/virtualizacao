@@ -57,6 +57,13 @@ minikube addons enable ingress
 Declare o manifesto do ingress para expor o service na porta 80. Note que o ingress está configurado para redirecionar todas as requisições para o path `/` para o service `kubernetes-challenge-service` na porta 80.
 <CodePreview src="/codes/kubernetes/solucao-kubernetes-challenge/ingress.yaml" lang="kubernetes" height={200} />
 
+Um atributo obrigatório no ingress é o `ingressClassName`. O ingressClassName é um atributo que permite que o Kubernetes saiba qual controlador de ingress deve ser utilizado para tratar as requisições.
+Ao utilizar minikube com o add-on ingress, o ingressClassName deve ser `nginx`. É possível verificar o ingressClassName através do comando:
+```bash
+kubectl get ingressclass
+```
+
+
 Para aplicar o manifesto no cluster, execute o seguinte comando:
 ```bash
 kubectl apply -f ingress.yaml
@@ -94,7 +101,7 @@ Agora é só aplicar as alterações no cluster:
 kubectl apply -f deployment_v2.yaml
 ```
 
-Agora acesse novamente o endereço http://localhost através do comando (após acessar `minikube ssh`):
+Finalmente, acesse novamente o endereço http://localhost através do comando (após acessar `minikube ssh`):
 ```bash
 curl http://localhost
 ```

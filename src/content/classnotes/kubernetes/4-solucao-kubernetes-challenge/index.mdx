@@ -1,0 +1,110 @@
+---
+title: Resolvendo o desafio kubernetes-challenge
+
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+Neste tutorial vamos resolver o desafio Kubernetes Challenge (https://github.com/diegoep/kubernetes-challenge).
+
+## Pré-requisitos
+1. Um cluster Kubernetes em execução (local ou remoto).
+2. A ferramenta de linha de comando kubectl configurada para se conectar ao cluster.
+
+
+## Fazendo clone do repositório
+
+```bash
+git clone https://github.com/diegoep/kubernetes-challenge
+```
+
+## Utilizando o runtime local no minikube (caso esteja rodando localmente usando Minikube)
+```bash
+eval $(minikube docker-env)
+```
+
+## Construindo a imagem docker do projeto
+```bash
+cd kubernetes-challenge
+docker build -t kubernetes-challenge:latest .
+```
+
+## Criando o deployment
+Declare o manifesto do deployment com um container apontando para a imagem docker kubernetes-challenge:latest.
+<CodePreview src="/codes/kubernetes/solucao-kubernetes-challenge/deployment_v1.yaml" lang="kubernetes" height={200} />
+Note que foi declarada a opção `imagePullPolicy: Never`. Isso é particularmente útil para evitar que o Kubernetes tente baixar a imagem de um repositório remoto. 
+Como estamos usando o runtime local do Minikube, a imagem já está disponível localmente.
+
+## Criando o service
+Declare o manifesto do service para expor o deployment na porta 80. Note que a aplicação roda na porta 4000 (https://github.com/diegoep/kubernetes-challenge/blob/main/server.js#LL2C1-L3C1), logo é necessário mapear a porta 80 do service para a porta 4000 do container.
+<CodePreview src="/codes/kubernetes/solucao-kubernetes-challenge/service.yaml" lang="kubernetes" height={200} />
+
+Para aplicar os manifestos no cluster, execute o seguinte comando:
+```bash
+kubectl apply -f deployment_v1.yaml
+kubectl apply -f service.yaml
+```
+
+## Criando o ingress
+Para utilizar o ingress, é necessário que o add-on ingress esteja habilitado no Minikube. Para habilitar o add-on, execute o seguinte comando:
+```bash
+minikube addons enable ingress
+```
+
+Declare o manifesto do ingress para expor o service na porta 80. Note que o ingress está configurado para redirecionar todas as requisições para o path `/` para o service `kubernetes-challenge-service` na porta 80.
+<CodePreview src="/codes/kubernetes/solucao-kubernetes-challenge/ingress.yaml" lang="kubernetes" height={200} />
+
+Para aplicar o manifesto no cluster, execute o seguinte comando:
+```bash
+kubectl apply -f ingress.yaml
+```
+
+Em seguida, faça ssh para o nó do minikube:
+```bash
+minikube ssh
+```
+
+Agora é só acessar o endereço http://localhost através do comando:
+```bash
+curl http://localhost
+``` 
+E conferir o resultado, que deve ser:
+```bash
+Hello guest!
+```
+
+Note que a mensagem está direcionada ao usuário "guest". Para que a mensagem seja direcionada ao usuário correto, é necessário criar uma variável de ambiente chamada `NAME` com o valor do nome do usuário. 
+
+Vamos criar um configmap para armazenar o valor da variável de ambiente:
+<CodePreview src="/codes/kubernetes/solucao-kubernetes-challenge/configmap.yaml" lang="kubernetes" height={200} />
+
+Para aplicar o manifesto no cluster, execute o seguinte comando:
+```bash
+kubectl apply -f configmap.yaml
+```
+
+Em seguida, basta editar o deployment e adicionar a variável de ambiente apontando para o configmap criado anteriormente:
+<CodePreview src="/codes/kubernetes/solucao-kubernetes-challenge/deployment_v2.yaml" lang="kubernetes" height={200} />
+
+Agora é só aplicar as alterações no cluster:
+```bash
+kubectl apply -f deployment_v2.yaml
+```
+
+Agora acesse novamente o endereço http://localhost através do comando (após acessar `minikube ssh`):
+```bash
+curl http://localhost
+```
+
+E o resultado será a mensagem direcionada ao usuário correto:
+```bash
+Hello Diego!
+```
+
+## Conclusão
+Neste artigo, vimos como resolver o desafio kubernetes-challenge. 
+Para isso, criamos um deployment, um service e um ingress. 
+Além disso, vimos como criar um configmap e como adicionar uma variável de ambiente em um deployment.

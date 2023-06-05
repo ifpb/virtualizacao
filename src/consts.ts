@@ -9,7 +9,8 @@ export const CLASSNOTE_SLUGS = [
   'terraform/5-resposta-atividade',
   'kubernetes/1-instalacao',
   'kubernetes/2-primeiros-recursos',
-  'kubernetes/3-configmaps-secrets'
+  'kubernetes/3-configmaps-secrets',
+  'kubernetes/4-solucao-kubernetes-challenge'
 ];
 
 export const MENU = [

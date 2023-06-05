@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: go-redis-kubernetes
+  name: go-redis-kubernetes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-redis-kubernetes
+  template:
+    metadata:
+      labels:
+        app: go-redis-kubernetes
+    spec:
+      containers:
+      - image: go-redis-kubernetes:1.0.0
+        name: go-redis-kubernetes
+        imagePullPolicy: Never
+        env:
+          - name: REDIS_HOST
+            valueFrom:
+              secretKeyRef:
+                key: redis-host
+                name: go-redis-kubernetes
+          - name: REDIS_PORT
+            valueFrom:
+              secretKeyRef:
+                key: redis-port
+                name: go-redis-kubernetes
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: redis-password
+                name: go-redis-kubernetes

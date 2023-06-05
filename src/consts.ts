@@ -10,7 +10,8 @@ export const CLASSNOTE_SLUGS = [
   'kubernetes/1-instalacao',
   'kubernetes/2-primeiros-recursos',
   'kubernetes/3-configmaps-secrets',
-  'kubernetes/4-solucao-kubernetes-challenge'
+  'kubernetes/4-solucao-kubernetes-challenge',
+  'kubernetes/5-solucao-go-redis'
 ];
 
 export const MENU = [

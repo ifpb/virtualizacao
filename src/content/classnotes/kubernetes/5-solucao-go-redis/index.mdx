@@ -1,0 +1,119 @@
+---
+title: Resolvendo o desafio go-redis-kubernetes
+
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+Neste tutorial vamos resolver o desafio Go-Redis-Kubernetes (https://github.com/diegoep/go-redis-kubernetes).
+
+## Pré-requisitos
+1. Um cluster Kubernetes em execução (local ou remoto).
+2. A ferramenta de linha de comando kubectl configurada para se conectar ao cluster.
+
+
+## Fazendo clone do repositório
+
+```bash
+git clone https://github.com/diegoep/go-redis-kubernetes
+```
+
+## Utilizando o runtime local no minikube (caso esteja rodando localmente usando Minikube)
+```bash
+eval $(minikube docker-env)
+```
+
+## Subindo o Redis
+Antes de rodar a aplicação, devemos subir o Redis. Para isso, vamos utilizar o seguinte manifesto:
+<CodePreview src="/codes/kubernetes/solucao-go-redis-kubernetes/redis.yaml" lang="kubernetes" height={200} />
+
+Para possibilitar que o Redis seja acessado pela nossa aplicação, precisamos criar um service:
+<CodePreview src="/codes/kubernetes/solucao-go-redis-kubernetes/redis-service.yaml" lang="kubernetes" height={200} />
+
+Aplique os manifestos no cluster:
+```bash
+kubectl apply -f redis.yaml
+kubectl apply -f redis-service.yaml
+```
+
+
+## Construindo a imagem docker do projeto
+Agora vamos construir a imagem docker da aplicação. Para tal, utilize o seguinte comando:
+```bash
+cd go-redis-kubernetes
+docker build -t go-redis-kubernetes:1.0.0 .
+```
+
+## Criando um secret para armazenar as credenciais do Redis que serão usadas pela aplicação.
+Observe que a aplicação usa três variáveis de ambiente para determinar as credenciais que serão utilizada para conectar com o Redis (REDIS_HOST, REDIS_PORT e REDIS_PASSWORD), conforme visto no código-fonte: https://github.com/diegoep/go-redis-kubernetes/blob/main/main.go#L48.
+
+Use o seguinte comando para gerar o manifesto dos secrets contendo os valores desejados (host, porta e senha):
+```bash
+k create secret generic go-redis-kubernetes --from-literal="redis-host=redis" --from-literal="redis-port=6379" --from-literal="redis-password=str0ng-p455sw0rd"  -o yaml --dry-run
+```
+
+Salve a saída em um arquivo que irá conter o seguinte conteúdo:
+<CodePreview src="/codes/kubernetes/solucao-go-redis-kubernetes/secret.yaml" lang="kubernetes" height={200} />
+
+
+## Criando o deployment
+Declare o manifesto do deployment com um container apontando para a imagem docker go-redis-kubernetes:1.0.0.
+
+<CodePreview src="/codes/kubernetes/solucao-go-redis-kubernetes/deployment.yaml" lang="kubernetes" height={200} />
+Note que foi declarada a opção `imagePullPolicy: Never`. Isso é particularmente útil para evitar que o Kubernetes tente baixar a imagem de um repositório remoto. 
+Como estamos usando o runtime local do Minikube, a imagem já está disponível localmente.
+
+Note também que estamos definindo as três variáveis de ambientes utilizadas pela aplicação (REDIS_HOST, REDIS_PORT e REDIS_PASSWORD), carregando os valores a partir do secret que foi criado anteriormente.
+
+## Criando o service
+Para podermos acessar a aplicação externamente, declare o manifesto do service para expor o deployment do go-redis-kubernetes na porta 80. Note que a aplicação roda na porta 8080 (https://github.com/diegoep/go-redis-kubernetes/blob/main/main.go#L72), logo é necessário mapear a porta 80 do service para a porta 8080 do container.
+<CodePreview src="/codes/kubernetes/solucao-go-redis-kubernetes/service.yaml" lang="kubernetes" height={200} />
+
+Para aplicar os manifestos no cluster, execute o seguinte comando:
+```bash
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+
+## Criando o ingress
+Para utilizar o ingress, é necessário que o add-on ingress esteja habilitado no Minikube. Para habilitar o add-on, execute o seguinte comando:
+```bash
+minikube addons enable ingress
+```
+
+Declare o manifesto do ingress para expor o service na porta 80. Note que o ingress está configurado para redirecionar todas as requisições para o path `/qod` para o service `go-redis-kubernetes` na porta 80.
+<CodePreview src="/codes/kubernetes/solucao-kubernetes-challenge/ingress.yaml" lang="kubernetes" height={200} />
+
+Um atributo obrigatório no ingress é o `ingressClassName`. O ingressClassName é um atributo que permite que o Kubernetes saiba qual controlador de ingress deve ser utilizado para tratar as requisições.
+Ao utilizar minikube com o add-on ingress, o ingressClassName deve ser `nginx`. É possível verificar o ingressClassName através do comando:
+```bash
+kubectl get ingressclass
+```
+
+
+Para aplicar o manifesto no cluster, execute o seguinte comando:
+```bash
+kubectl apply -f ingress.yaml
+```
+
+Em seguida, faça ssh para o nó do minikube:
+```bash
+minikube ssh
+```
+
+Agora é só acessar o endereço http://localhost/go-redis através do comando:
+```bash
+curl http://localhost/go-redis
+``` 
+E conferir o resultado, que deve uma frase do dia aleatória, como:
+```bash
+True friends stab you in the front.docker
+```
+
+
+## Conclusão
+Neste artigo, vimos como resolver o desafio go-redis-kubernetes.
+Para isso, criamos uma instância do Redis e uma aplicação Go que se conecta ao Redis para obter uma frase do dia aleatória.

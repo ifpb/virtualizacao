@@ -33,4 +33,4 @@ spec:
             valueFrom:
               secretKeyRef:
                 key: redis-password
-                name: go-redis-kubernetes
+                name: redis

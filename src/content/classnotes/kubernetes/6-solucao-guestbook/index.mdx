@@ -1,0 +1,113 @@
+---
+title: Resolvendo o desafio guestbook
+
+---
+
+import CodePreview from '../../../../components/CodePreview.astro';
+import HtmlPreview from '../../../../components/HtmlPreview.astro';
+
+# {frontmatter.title}
+
+Neste tutorial vamos resolver o desafio Guestbook (https://github.com/diegoep/guestbook).
+
+## Pré-requisitos
+1. Um cluster Kubernetes em execução (local ou remoto).
+2. A ferramenta de linha de comando kubectl configurada para se conectar ao cluster.
+
+
+## Fazendo clone do repositório
+
+```bash
+git clone https://github.com/diegoep/guestbook
+```
+
+## Utilizando o runtime local no minikube (caso esteja rodando localmente usando Minikube)
+```bash
+eval $(minikube docker-env)
+```
+
+## Subindo o Redis
+Antes de rodar a aplicação, devemos subir o Redis. 
+Note que neste caso estamos rodando o Redis com alta disponibilidade, utilizando um redis-master e dois redis-replica. 
+Para isso, estamos utilizando o seguinte manifestos:
+<CodePreview src="/codes/kubernetes/solucao-guestbook/redis/redis-deployment.yaml" lang="kubernetes" height={200} />
+
+Para possibilitar que o Redis (tanto o redis-master como o redis-replica) seja acessado pela nossa aplicação, precisamos criar os respectivos services:
+<CodePreview src="/codes/kubernetes/solucao-guestbook/redis/redis-service.yaml" lang="kubernetes" height={200} />
+
+Note que cada manifesto possui a declaração de mais de um recurso. Isso é possível porque o Kubernetes permite declarar vários recursos em um mesmo manifesto, desde que cada recurso seja separado por `---`.
+
+Aplique os manifestos no cluster:
+```bash
+kubectl apply -f redis-deployment.yaml
+kubectl apply -f redis-service.yaml
+```
+
+Note que nos manifestos estão sendo definidos os limits e requests de CPU e memória. 
+Isso é importante para que o Kubernetes possa gerenciar os recursos de forma eficiente.
+* limits: é o limite máximo de CPU e memória que o container pode consumir.
+* requests: é o mínimo de CPU e memória que o container precisa para funcionar.
+
+Um padrão conhecido como `garanteed` é quando o `limits` é atribuído igual ao `requests`. 
+Isso significa que o container terá sempre a quantidade de recursos que ele precisa para funcionar. 
+A vantagem desse padrão é que o Kubernetes consegue gerenciar os recursos de forma mais eficiente, pois sabe exatamente quanto de CPU e memória cada container precisa.
+A desvantagem é que o container irá utilizar inicialmente a quantidade de recursos definida no request, mesmo que ele não precise de tudo isso.
+
+## Construindo a imagem docker do projeto
+Agora vamos construir a imagem docker da aplicação. Para tal, utilize o seguinte comando:
+```bash
+cd guestbook
+docker build -t guestbook:1.0.0 .
+```
+
+## Criando o deployment
+Declare o manifesto do deployment com um container apontando para a imagem docker guestbook:1.0.0.
+
+<CodePreview src="/codes/kubernetes/solucao-guestbook/deployment.yaml" lang="kubernetes" height={200} />
+
+Note que foi declarada a opção `imagePullPolicy: Never`. Isso é particularmente útil para evitar que o Kubernetes tente baixar a imagem de um repositório remoto. 
+Como estamos usando o runtime local do Minikube, a imagem já está disponível localmente.
+
+## Criando o service
+Para podermos acessar a aplicação externamente, declare o manifesto do service para expor o deployment do guestbook na porta 80. Note que a aplicação roda na porta 3000 (https://github.com/diegoep/guestbook/blob/main/main.go#L74), logo é necessário mapear a porta 80 do service para a porta 3000 do container.
+<CodePreview src="/codes/kubernetes/solucao-guestbook/service.yaml" lang="kubernetes" height={200} />
+
+Para aplicar os manifestos no cluster, execute o seguinte comando:
+```bash
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+
+## Criando o ingress
+Para utilizar o ingress, é necessário que o add-on ingress esteja habilitado no Minikube. Para habilitar o add-on, execute o seguinte comando:
+```bash
+minikube addons enable ingress
+```
+
+Declare o manifesto do ingress para expor o service na porta 80. Note que o ingress está configurado para redirecionar todas as requisições para o path `/` para o service `guestbook` na porta 80.
+<CodePreview src="/codes/kubernetes/solucao-guestbook/ingress.yaml" lang="kubernetes" height={200} />
+
+Um atributo obrigatório no ingress é o `ingressClassName`. O ingressClassName é um atributo que permite que o Kubernetes saiba qual controlador de ingress deve ser utilizado para tratar as requisições.
+Ao utilizar minikube com o add-on ingress, o ingressClassName deve ser `nginx`. É possível verificar o ingressClassName através do comando:
+```bash
+kubectl get ingressclass
+```
+
+
+Para aplicar o manifesto no cluster, execute o seguinte comando:
+```bash
+kubectl apply -f ingress.yaml
+```
+
+Para acessar a aplicação no seu navegador, é preciso fazer port-forward do serviço do nginx-controller para uma porta na máquina host:
+```bash
+kubectl port-forward svc/ingress-nginx-controller 8888:80 -n ingress-nginx
+```
+Neste caso foi feito o redirecionamento de portas (port-forward) para a porta 8888.
+
+Agora é só acessar o endereço http://localhost:8888/ no seu navegador e conferir o resultado, que deve ser a aplicação do livro de visitas funcionando e conectada ao Redis.
+
+
+## Conclusão
+Neste artigo, vimos como resolver o desafio guestbook.
+Para isso, criamos uma instância do Redis e de uma aplicação Go que se conecta ao Redis para o gerenciamento de frases de um livro de visitas.

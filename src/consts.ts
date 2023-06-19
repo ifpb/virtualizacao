@@ -11,7 +11,8 @@ export const CLASSNOTE_SLUGS = [
   'kubernetes/2-primeiros-recursos',
   'kubernetes/3-configmaps-secrets',
   'kubernetes/4-solucao-kubernetes-challenge',
-  'kubernetes/5-solucao-go-redis'
+  'kubernetes/5-solucao-go-redis',
+  'kubernetes/6-solucao-guestbook'
 ];
 
 export const MENU = [
